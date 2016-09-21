@@ -11,7 +11,7 @@ https://github.com/bkreed/aglug-prometheus
 
 - Developer and DevOps
 - C, Perl, Python (and now Go)
-- Been using Go since 2014
+- Been using Go since 2013
 
 
 * What is a Threat Grid?
@@ -120,7 +120,7 @@ Exporters are anything that expose a `/metrics` endpoint to Prometheus
 There are existing exporters for most things:
 - Node Exporter
 - MySql
-- PostgresQL
+- PostgreSQL
 - MongoDB
 - SNMP
 - BIND
@@ -146,7 +146,7 @@ Available for:
 - PHP
 - Rust
 
-But we're only going to talk about go.
+But we're Gophers...
 
 * Expose the metrics handler
 .code server.go HLone
