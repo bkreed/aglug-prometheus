@@ -155,6 +155,15 @@ But we're Gophers...
 .code server.go HLtwo
 : Note that the handler func in prometheus is deprecated
 
+* Add a gauge
+Note that what we really want is a `GaugeVec`
+
+.code gauge.go /^func.*Register/,/^}/
+
+* And update the gauge
+
+.code gauge.go /^func.*gauge/,/^}/
+
 
 
 
