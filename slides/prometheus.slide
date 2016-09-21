@@ -1,0 +1,161 @@
+Prometheus Metrics and Alerting
+Austin Go Languge Users Group
+21 Sep 2016
+
+Bryan Reed
+Developer (and recovering sysadmin), Cisco AMP Threat Grid
+bryreed@cisco.com
+https://github.com/bkreed/aglug-prometheus
+
+* Who am I?
+
+- Developer and DevOps
+- C, Perl, Python (and now Go)
+- Been using Go since 2014
+
+
+* What is a Threat Grid?
+
+.image tg-screenshot.png
+Malware analysis and intelligence
+
+* Why did we pick Prometheus?
+
+- Acquired by Cisco, June 2014
+- Using home brewed "Kiries"
+- Millions of samples a week
+- Increasing cluster size
+- Push model didn't scale
+- Data store requirements getting out of hand
+
+* Intro to Prometheus
+
+- Open source monitoring and alerting toolkit
+- Built by SoundCloud
+- Time series data
+- Pull model
+- No reliance on distributed storage
+- Bring your own graphing/dashboard tool
+
+* Data Model
+
+- Everything stored as time series
+- Metrics and labels
+
+    <metric name>{<label name>=<label value>, ...}
+
+    http_requests_total{code="500", group="web", handler=/file method="get"}
+
+: Naming conventions on the site.
+: Also note that every unique label pair causes a new time series
+
+- A sample is a `float64` and a milisecond-precision timestamp
+: Mention the Gophercon talk about why we they use floats
+
+* Metric Types
+- Counter
+- Gauge
+- Histogram
+- Summary (new)
+
+* Counter
+Only goes up.
+Use for things like counting HTTP requests
+.code metrics.go /^type Counter/,/^}/
+
+* Gauge
+Used for recording a value at a point in time
+Examples would be disk space or memory used
+.code metrics.go /^type Gauge/,/^}/
+
+* Histogram and Summary
+Counts of "observations"
+.code metrics.go /^type Histogram/,/^}/
+- Sums of observed values `<basename>_sum`
+- Count of events observed `<basename>_count`
+- Quantiles
+- Summary gives you configurable quantiles
+: Mention there is a whole big section on which to use
+
+* Querying
+Remember the metrics name and tags example?
+
+    http_requests_total{handler="/file"}
+
+Can also use `!=` and the regexp `=~` and `!~`
+
+    http_requests_total{handler=~"/artifact|/blob",method!="POST"}
+
+Range vectors and offsets
+
+    http_requests_total{handler=~"/file|prometheus"} [5m] offset 2h
+
+Operators too
+
+    http_request_duration_microseconds{role="portal", handler="/", group="phl"} / 1000000
+
+And functions
+
+    avg(rate(http_requests_total{role="dictator",handler!="prometheus",group="phl"}[5m]))
+
+* Visualization
+
+- Built in expression browser
+- Grafana
+- PromDash
+- Templating support
+
+My advice: Learn the expression browser and use Grafana.
+
+* Alerting
+Meet the Alertmanager
+
+- Separate process
+- Notification via PagerDuty, HipChat, etc
+- Defined by rule set (DSL)
+
+* Exporters
+Exporters are anything that expose a `/metrics` endpoint to Prometheus
+
+There are existing exporters for most things:
+- Node Exporter
+- MySql
+- PostgresQL
+- MongoDB
+- SNMP
+- BIND
+- Ceph
+- Docker Hub
+- Jenkins
+- JMX
+
+
+* Instrumenting
+If you don't have an exporter for something, they are easy to write.
+
+Available for:
+- Go
+- Java/Scala/Clojure
+- Python
+- Ruby
+- Bash
+- Erlang
+- Haskell
+- Node.js
+- .NET / C#
+- PHP
+- Rust
+
+But we're only going to talk about go.
+
+* Expose the metrics handler
+.code server.go HLone
+
+* Wrap another handler
+.code server.go HLtwo
+: Note that the handler func in prometheus is deprecated
+
+
+
+
+
