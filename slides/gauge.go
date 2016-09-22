@@ -1,4 +1,8 @@
-import "time"
+import (
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+)
 
 func (conn *Conn) RegisterQueues(queues []string) {
 	gv := prometheus.NewGaugeVec(
@@ -10,7 +14,7 @@ func (conn *Conn) RegisterQueues(queues []string) {
 			"queue",
 		},
 	)
-	prometheus.Register(samples)
+	prometheus.Register(gv)
 
 	go func() {
 		ticker := time.NewTicker(time.Second * 15)
